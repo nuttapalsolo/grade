@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import ReportDashboard from "./components/ReportDashboard";
-import ReportList from "./components/ReportList";
-import ReportDetail from "./components/ReportDetail";
-import { ReportItem, ReportData } from "./types";
+// แก้ไขพาธจาก "./..." เป็น "../reports/..."
+import ReportDashboard from "../reports/components/ReportDashboard"; 
+import ReportList from "../reports/components/ReportList";           
+import ReportDetail from "../reports/components/ReportDetail";       
+import { ReportItem, ReportData } from "../reports/types";           
 
 export default function ReportsPage() {
   const [view, setView] = useState<"dashboard" | "list" | "single">("dashboard");

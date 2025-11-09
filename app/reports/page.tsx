@@ -1,45 +1,78 @@
+// app/reports/page.tsx
+
 "use client";
 
 import { useState } from "react";
-import ReportDashboard from "./components/ReportDashboard";
-import ReportList from "./components/ReportList";
-import ReportDetail from "./components/ReportDetail";
-import { ReportItem, ReportData } from "./types";
+// ********** ลบเครื่องหมาย Comment (//) ออกทั้งหมด **********
+import ReportDashboard from "./components/ReportDashboard"; 
+import ReportList from "./components/ReportList";           
+import ReportDetail from "./components/ReportDetail";       
+import { ReportItem, ReportData } from "./types";           
+// **********************************************************
+
 
 export default function ReportsPage() {
-  const [view, setView] = useState<"dashboard" | "list" | "single">("dashboard");
-  const [selectedReport, setSelectedReport] = useState<ReportItem | null>(null);
+  const [view, setView] = useState<"dashboard" | "list" | "single">("dashboard");
+  const [selectedReport, setSelectedReport] = useState<ReportItem | null>(null);
 
-  const data: ReportData[] = [
-    { name: "Math", score: 85 },
-    { name: "English", score: 90 },
-    { name: "Science", score: 78 },
-  ];
+  const data: ReportData[] = [
+    { name: "Math", score: 85 },
+    { name: "English", score: 90 },
+    { name: "Science", score: 78 },
+  ];
 
-  const reports: ReportItem[] = [
-    {
-      id: 1,
-      name: "Term 1 Summary",
-      date: "2025-11-01",
-      teacher: "Mr. Tack",
-      summary: "Students performed well overall, with an average improvement of 10%.",
-    },
-    {
-      id: 2,
-      name: "Attendance Report",
-      date: "2025-11-05",
-      teacher: "Mr. Tack",
-      summary: "Attendance rate improved by 5% compared to the previous term.",
-    },
-  ];
+  const reports: ReportItem[] = [
+    {
+      id: 1,
+      name: "Term 1 Summary",
+      date: "2025-11-01",
+      teacher: "Mr. Tack",
+      summary: "Students performed well overall, with an average improvement of 10%.",
+    },
+    {
+      id: 2,
+      name: "Attendance Report",
+      date: "2025-11-05",
+      teacher: "Mr. Tack",
+      summary: "Attendance rate improved by 5% compared to the previous term.",
+    },
+  ];
 
-  return (
-    <div className="p-6 space-y-6">
-      <h1 className="text-3xl font-bold text-center">Reports</h1>
+  // ส่วน GroupedData, students, grouped, chartData
+  interface GroupedData {
+    classroom: string;
+    total: number;
+    sum: number;
+  }
 
-      {/* Mode Buttons */}
-      <div className="flex justify-center gap-4 flex-wrap">
-        {["dashboard", "list", "single"].map((mode) => (
+  const students = [
+    { classroom: "A", score: 80 },
+    { classroom: "A", score: 90 },
+    { classroom: "B", score: 70 },
+    { classroom: "อื่นๆ", score: 60 },
+  ];
+
+  const grouped: Record<string, GroupedData> = {};
+
+  students.forEach((s) => {
+    const c = s.classroom || "อื่นๆ";
+    if (!grouped[c]) grouped[c] = { classroom: c, total: 0, sum: 0 };
+    grouped[c].total += 1;
+    grouped[c].sum += Number(s.score || 0);
+  });
+
+  const chartData = Object.values(grouped).map((g) => ({
+    name: g.classroom,
+    avg: g.total ? Math.round(g.sum / g.total) : 0,
+  }));
+
+  return (
+    <div className="p-6 space-y-6">
+      <h1 className="text-3xl font-bold text-center">Reports</h1>
+      
+      {/* Mode Buttons */}
+      <div className="flex justify-center gap-4 flex-wrap">
+        {["dashboard", "list", "single"].map((mode) => (
           <button
             key={mode}
             onClick={() => setView(mode as "dashboard" | "list" | "single")}
@@ -54,22 +87,22 @@ export default function ReportsPage() {
               : "Single Report"}
           </button>
         ))}
-      </div>
+      </div>
 
-      {/* Render View */}
-      {view === "dashboard" && <ReportDashboard data={data} />}
-      {view === "list" && (
-        <ReportList
-          reports={reports}
-          onSelectReport={(r) => {
-            setSelectedReport(r);
-            setView("single");
-          }}
-        />
-      )}
-      {view === "single" && selectedReport && (
-        <ReportDetail report={selectedReport} onBack={() => setView("list")} />
-      )}
-    </div>
-  );
+      {/* Render View */}
+      {view === "dashboard" && <ReportDashboard data={data} />}
+      {view === "list" && (
+        <ReportList
+          reports={reports}
+          onSelectReport={(r) => {
+            setSelectedReport(r);
+            setView("single");
+          }}
+        />
+      )}
+      {view === "single" && selectedReport && (
+        <ReportDetail report={selectedReport} onBack={() => setView("list")} />
+      )}
+    </div>
+  );
 }
